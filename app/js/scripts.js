@@ -1,87 +1,104 @@
-var CATS_DATA = [
-  { name: "Roger", img: "img/cat.jpg", clicks: 0 },
-  { name: "James", img: "img/cat-2.jpg", clicks: 0 },
-  { name: "Bond", img: "img/cat-3.jpg", clicks: 0 },
-  { name: "Jimmy", img: "img/cat-4.jpg", clicks: 0 },
-  { name: "Tom", img: "img/cat-5.jpg", clicks: 0 }
-];
+/* MODEL */
+var model = {
+  currentCat: null,
+  cats: [
+    { name: "Roger", src: "img/cat.jpg", clickCount: 0 },
+    { name: "James", src: "img/cat-2.jpg", clickCount: 0 },
+    { name: "Bond", src: "img/cat-3.jpg", clickCount: 0 },
+    { name: "Jimmy", src: "img/cat-4.jpg", clickCount: 0 },
+    { name: "Tom", src: "img/cat-5.jpg", clickCount: 0 }
+  ]
+};
 
-function getCount(element) {
-  return parseInt(element.innerHTML);
-}
+/* OCTOPUS */
+var octopus = {
+  init: function() {
+    // set our current cat to the first one in the list
+    model.currentCat = model.cats[0];
 
-function setCount(element, count) {
-  return element.innerHTML = count;
-}
-
-function increaseCount(element) {
-  return setCount(element, getCount(element) + 1);
-}
-
-function increaseCounter() {
-  var element = document.getElementById('clicks-counter');
+    // tell our views to initialize
+    catListView.init();
+    catView.init();
+  },
   
-  increaseCount(element);
-}
-
-function getCatName(name) {
-  var elem = document.createElement('h2');
-  elem.textContent = name;
+  getCurrentCat: function() {
+    return model.currentCat;
+  },
   
-  return elem;
-}
-
-function getCatPicture(catObject) {
-  var elem = document.createElement('img');
+  getCats: function() {
+    return model.cats;
+  },
   
-  elem.src = catObject.img;
-  elem.className = 'img-response img-thumbnail';
-  elem.onclick = function() {
-      catObject.clicks += 1;
-      increaseCounter();
+  setCurrentCat: function(cat) {
+    model.currentCat = cat;
+  },
+  
+  incrementCounter: function() {
+    model.currentCat.clickCount += 1;
+    catView.render();
   }
+};
+
+/* VIEWS */
+
+var catView = {
   
-  return elem;
+  init: function() {
+    // store pointers to our DOM elements for easy access later
+    this.catNameElem = document.getElementById('cat-name');
+    this.catImageElem = document.getElementById('cat-img');
+    this.countElem = document.getElementById('clicks-counter');
+    
+    // on click, increment the current cat's counter
+    this.catImageElem.onclick = function() {
+      octopus.incrementCounter();
+    };
+    
+    // render this view (update the DOM elements with the right values)
+    this.render();
+  },
+  
+  render: function() {
+    // update the DOM elements with values from the current cat
+    var currentCat = octopus.getCurrentCat();
+    this.countElem.textContent = currentCat.clickCount;
+    this.catNameElem.textContent = currentCat.name;
+    this.catImageElem.src = currentCat.src;
+  }
 }
 
-function getCounter(clicksCount) {
-  var elem = document.createElement('h3');
-  
-  elem.textContent = 'Counter: ';
-  
-  var count = document.createElement('span');
-  count.id = 'clicks-counter';
-  count.textContent = clicksCount;
-  
-  elem.appendChild(count);
-  
-  return elem;
-}
+var catListView = {
 
-function displayCat(catObject) {
-  var elem = document.getElementById('cat-display');
-  elem.innerHTML = '';
-  elem.appendChild(getCatName(catObject.name));
-  elem.appendChild(getCatPicture(catObject));
-  elem.appendChild(getCounter(catObject.clicks))
-}
+  init: function() {
+    // store the DOM element for easy access later
+    this.catListElem = document.getElementById('cat-list');
 
-function createCatListItem(catObject) {
-  var elem = document.createElement('li');
-  
-  elem.textContent = catObject.name;
-  elem.className = 'list-group-item';
-  elem.onclick = function() { return displayCat(catObject); };
-  
-  return elem;
-}
+    // render this view (update the DOM elements with the right values)
+    this.render();
+  },
 
-function createCatList(elem, cats) {
-  cats.forEach(function(cat){
-    elem.appendChild(createCatListItem(cat));
-  });
-}
+  render: function() {
+    var elem;
 
-var catsList = document.getElementById('cat-list');
+    // empty the cat list
+    this.catListElem.innerHTML = '';
 
-createCatList(catsList, CATS_DATA);
+    octopus.getCats().forEach(function(cat) {
+      // make a new cat list item and set its text
+      elem = document.createElement('li');
+      elem.textContent = cat.name;
+      elem.className = 'list-group-item'
+      
+      elem.onclick = function() {
+          octopus.setCurrentCat(cat);
+          catView.render();
+      };
+
+      // Add the element to the list
+      this.catListElem.appendChild(elem);
+    }, this);
+  }
+};
+
+// make it go!
+octopus.init();
