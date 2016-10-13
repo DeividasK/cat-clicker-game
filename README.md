@@ -1,5 +1,5 @@
 # Cat clicker game
-This a simple cat clicker game built using vanilla JS during a udacity course "[JS design patterns](https://www.udacity.com/course/javascript-design-patterns--ud989)".
+This a simple cat clicker game built using vanilla JS during a udacity course "[JS design patterns](https://www.udacity.com/course/javascript-design-patterns--ud989)". You can view the project at [https://deividask.github.io/cat-clicker-game/](https://deividask.github.io/cat-clicker-game/).
 
 ## Project specifications
 
